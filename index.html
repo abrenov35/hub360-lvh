@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>AB Renov · Portail</title>
+  <title>HUB 360 LVH · Portail</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet"/>
@@ -146,8 +146,8 @@
 
   <header>
     <div class="logo">
-      <span class="logo-mark">AB<em></em>RENOV</span>
-      <span class="logo-sub">Portail</span>
+      <span class="logo-mark">HUB<em></em>360</span>
+      <span class="logo-sub">LVH · Portail</span>
     </div>
     <div class="header-right">
       <div class="search-wrap">
@@ -163,7 +163,7 @@
   <div class="edit-banner">✏️ Mode édition — touchez une icône pour la modifier</div>
 
   <div class="stage">
-    <p class="section-label">Mes sites</p>
+    <p class="section-label">Mes applications</p>
     <div class="grid" id="sitesGrid"></div>
   </div>
 
@@ -171,7 +171,7 @@
     <button class="btn-edit" id="editBtn">✏️ Gérer</button>
     <button class="btn-add" id="fabBtn">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Ajouter un site
+      Ajouter une app
     </button>
   </div>
 
@@ -183,7 +183,7 @@
       </div>
       <div class="field">
         <label for="inputName">Nom</label>
-        <input id="inputName" type="text" placeholder="ex : Google Drive" maxlength="24"/>
+        <input id="inputName" type="text" placeholder="ex : Google Drive" maxlength="30"/>
       </div>
       <div class="field">
         <label for="inputUrl">URL</label>
@@ -205,7 +205,7 @@
     // ⚙️ CONFIGURATION — collez ici votre URL Apps Script
     //    après avoir déployé (étape 2 du guide)
     // ═══════════════════════════════════════════════════
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2Nx390mXkVX98ADRmr_GlSHFg82ranj0_DKQIAuctVRUguPpvlAYWetze-C1oAmup/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4SOhvbKKIyEssWmkloKz0ocSwi2D7wsCWAoILrWfyIeC85SR7XywnwB_j8QpD3niN/exec';
 
     // ── Icônes SVG premium ──
     const ICONS = [
@@ -261,11 +261,9 @@
       try {
         let res, data;
         if (params.action === 'get') {
-          // GET avec paramètres URL
           res = await fetch(SCRIPT_URL + '?action=get');
           data = await res.json();
         } else {
-          // POST en mode no-cors (pas de réponse lisible, mais ça écrit)
           await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -287,9 +285,9 @@
       const r = await apiCall({ action: 'get' });
       if (r && r.sites) {
         sitesCache = r.sites;
-        localStorage.setItem('abrenov_sites', JSON.stringify(sitesCache));
+        localStorage.setItem('hub360_lvh_sites', JSON.stringify(sitesCache));
       } else {
-        try { sitesCache = JSON.parse(localStorage.getItem('abrenov_sites')) || []; } catch { sitesCache = []; }
+        try { sitesCache = JSON.parse(localStorage.getItem('hub360_lvh_sites')) || []; } catch { sitesCache = []; }
       }
       render(document.getElementById('searchInput').value);
     }
@@ -304,7 +302,7 @@
       sites.sort((a, b) => a.name.localeCompare(b, 'fr'));
 
       if (!sites.length) {
-        grid.innerHTML = `<div class="empty-state"><div class="ei">🔗</div><p>${q ? 'Aucun résultat.' : 'Aucun site enregistré.<br>Appuyez sur <strong>Ajouter</strong>.'}</p></div>`;
+        grid.innerHTML = `<div class="empty-state"><div class="ei">🔗</div><p>${q ? 'Aucun résultat.' : 'Aucune application enregistrée.<br>Appuyez sur <strong>Ajouter</strong>.'}</p></div>`;
         return;
       }
 
@@ -342,7 +340,7 @@
     async function deleteSite(id) {
       if (!confirm('Supprimer ce site ?')) return;
       sitesCache = sitesCache.filter(s => s.id !== id);
-      localStorage.setItem('abrenov_sites', JSON.stringify(sitesCache));
+      localStorage.setItem('hub360_lvh_sites', JSON.stringify(sitesCache));
       render(document.getElementById('searchInput').value);
       await apiCall({ action: 'delete', id });
     }
@@ -389,7 +387,7 @@
         await apiCall({ action: 'add', id: newId, name, url, iconId: selectedIcon.id });
       }
 
-      localStorage.setItem('abrenov_sites', JSON.stringify(sitesCache));
+      localStorage.setItem('hub360_lvh_sites', JSON.stringify(sitesCache));
       btn.disabled = false; btn.textContent = 'Enregistrer';
       closeModal();
       render(document.getElementById('searchInput').value);
@@ -399,7 +397,7 @@
     document.getElementById('delBtn').addEventListener('click', async () => {
       if (!editId || !confirm('Supprimer ?')) return;
       sitesCache = sitesCache.filter(s => s.id !== editId);
-      localStorage.setItem('abrenov_sites', JSON.stringify(sitesCache));
+      localStorage.setItem('hub360_lvh_sites', JSON.stringify(sitesCache));
       closeModal();
       render(document.getElementById('searchInput').value);
       await apiCall({ action: 'delete', id: editId });
@@ -415,9 +413,9 @@
 
     // ── Dark mode ──
     const dt = document.getElementById('darkToggle');
-    function applyDark(on) { document.body.classList.toggle('dark',on); dt.textContent=on?'☀️':'🌙'; localStorage.setItem('abrenov_dark',on?'1':'0'); }
+    function applyDark(on) { document.body.classList.toggle('dark',on); dt.textContent=on?'☀️':'🌙'; localStorage.setItem('hub360_lvh_dark',on?'1':'0'); }
     dt.addEventListener('click', () => applyDark(!document.body.classList.contains('dark')));
-    if (localStorage.getItem('abrenov_dark')==='1') applyDark(true);
+    if (localStorage.getItem('hub360_lvh_dark')==='1') applyDark(true);
 
     // ── Recherche ──
     document.getElementById('searchInput').addEventListener('input', e => render(e.target.value));
